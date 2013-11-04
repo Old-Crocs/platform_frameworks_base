@@ -299,6 +299,7 @@ public class SecureSettingsValidators {
         VALIDATORS.put(Secure.DISABLE_SECURE_TILES_ON_LOCKSCREEN, BOOLEAN_VALIDATOR);
         VALIDATORS.put(Secure.SHOW_COMBINED_STATUS_BAR_SIGNAL_ICONS, BOOLEAN_VALIDATOR);
         VALIDATORS.put(Secure.ENABLE_LOCATION_PRIVACY_INDICATOR, BOOLEAN_VALIDATOR);
+        VALIDATORS.put(Secure.VOLUME_LINK_NOTIFICATION, BOOLEAN_VALIDATOR);
         VALIDATORS.put(Secure.DEVICE_STATE_ROTATION_LOCK, value -> {
             if (TextUtils.isEmpty(value)) {
                 return true;
