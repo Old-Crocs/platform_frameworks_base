@@ -5318,10 +5318,9 @@ public final class Settings {
 
         /**
          * Change quick settings tiles animation style
-         *
          * @hide
          */
-        public static final String ANIM_TILE_STYLE = "anim_tile_style";
+        public static final String ANIM_TILE_STYLE = "anim_tile_style";   
 
         /**
          * Change quick settings tiles animation duration
@@ -5336,6 +5335,12 @@ public final class Settings {
          * @hide
          */
         public static final String ANIM_TILE_INTERPOLATOR = "anim_tile_interpolator";
+
+        /**
+         * Volume panel on left
+         * @hide
+         */
+        public static final String VOLUME_PANEL_ON_LEFT = "volume_panel_on_left"; 
 
         /**
          * Whether to display sound panel in the power menu
@@ -6333,11 +6338,15 @@ public final class Settings {
             PRIVATE_SETTINGS.add(STATUSBAR_CLOCK_DATE_FORMAT);
             PRIVATE_SETTINGS.add(STATUSBAR_CLOCK_DATE_POSITION);
             PRIVATE_SETTINGS.add(NETWORK_TRAFFIC_VIEW_LOCATION);
+<<<<<<< HEAD
             PRIVATE_SETTINGS.add(POCKET_JUDGE);
             PRIVATE_SETTINGS.add(BACK_GESTURE_HAPTIC);
             PRIVATE_SETTINGS.add(FORCE_FULLSCREEN_CUTOUT_APPS);
             PRIVATE_SETTINGS.add(SCREEN_OFF_ANIMATION);
             PRIVATE_SETTINGS.add(MAX_VISIBLE_NOTIFICATION_ICONS);
+=======
+            PRIVATE_SETTINGS.add(VOLUME_PANEL_ON_LEFT);
+>>>>>>> 91a4f5fd85cb (SystemUI: runtime configurable audio panel location)
         }
 
         /**
