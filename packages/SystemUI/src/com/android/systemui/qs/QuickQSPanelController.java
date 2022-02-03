@@ -18,16 +18,20 @@ package com.android.systemui.qs;
 
 import static com.android.systemui.media.dagger.MediaModule.QUICK_QS_PANEL;
 import static com.android.systemui.qs.dagger.QSFragmentModule.QQS_FOOTER;
+import static com.android.systemui.qs.dagger.QSFragmentModule.QS_USING_COLLAPSED_LANDSCAPE_MEDIA;
 import static com.android.systemui.qs.dagger.QSFragmentModule.QS_USING_MEDIA_PLAYER;
 import static com.android.systemui.qs.QuickQSPanel.QQS_BRIGHTNESS_SLIDER;
 import static com.android.systemui.qs.QuickQSPanel.QQS_FOOTER_ACTIONS;
 
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.UiEventLogger;
 import com.android.systemui.R;
 import com.android.systemui.dump.DumpManager;
+import com.android.systemui.media.MediaFlags;
 import com.android.systemui.media.MediaHierarchyManager;
 import com.android.systemui.media.MediaHost;
 import com.android.systemui.plugins.qs.QSTile;
@@ -39,6 +43,8 @@ import com.android.systemui.settings.brightness.BrightnessSliderController;
 import com.android.systemui.statusbar.policy.BrightnessMirrorController;
 import com.android.systemui.settings.brightness.BrightnessController;
 import com.android.systemui.tuner.TunerService;
+
+import com.android.systemui.util.leak.RotationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,11 +74,16 @@ public class QuickQSPanelController extends QSPanelControllerBase<QuickQSPanel> 
     private final BrightnessMirrorHandler mBrightnessMirrorHandler;
     private final FooterActionsController mFooterActionsController;
 
+    private final MediaFlags mMediaFlags;
+    private final boolean mUsingCollapsedLandscapeMedia;
+
     @Inject
     QuickQSPanelController(QuickQSPanel view, QSTileHost qsTileHost,
             QSCustomizerController qsCustomizerController,
             @Named(QS_USING_MEDIA_PLAYER) boolean usingMediaPlayer,
             @Named(QUICK_QS_PANEL) MediaHost mediaHost,
+            @Named(QS_USING_COLLAPSED_LANDSCAPE_MEDIA) boolean usingCollapsedLandscapeMedia,
+            MediaFlags mediaFlags,
             MetricsLogger metricsLogger, UiEventLogger uiEventLogger, QSLogger qsLogger,
             DumpManager dumpManager,
             QuickQSBrightnessController quickQSBrightnessController,
@@ -85,12 +96,14 @@ public class QuickQSPanelController extends QSPanelControllerBase<QuickQSPanel> 
         mBrightnessController = quickQSBrightnessController;
         mBrightnessMirrorHandler = new BrightnessMirrorHandler(mBrightnessController);
         mFooterActionsController = footerActionsController;
+        mUsingCollapsedLandscapeMedia = usingCollapsedLandscapeMedia;
+        mMediaFlags = mediaFlags;
     }
 
     @Override
     protected void onInit() {
         super.onInit();
-        mMediaHost.setExpansion(0.0f);
+        updateMediaExpansion();
         mMediaHost.setShowsOnlyActiveMedia(true);
         mMediaHost.init(MediaHierarchyManager.LOCATION_QQS);
         mBrightnessController.init(true);
@@ -99,6 +112,23 @@ public class QuickQSPanelController extends QSPanelControllerBase<QuickQSPanel> 
         mFooterActionsController.init();
         mFooterActionsController.refreshVisibility(mTunerService.getValue(
                     QQS_FOOTER_ACTIONS, 0) == 1);
+    }
+
+    private void updateMediaExpansion() {
+        int rotation = getRotation();
+        boolean isLandscape = rotation == RotationUtils.ROTATION_LANDSCAPE
+                || rotation == RotationUtils.ROTATION_SEASCAPE;
+        if (mMediaFlags.useMediaSessionLayout()
+                && (!mUsingCollapsedLandscapeMedia || !isLandscape)) {
+            mMediaHost.setExpansion(MediaHost.EXPANDED);
+        } else {
+            mMediaHost.setExpansion(MediaHost.COLLAPSED);
+        }
+    }
+
+    @VisibleForTesting
+    protected int getRotation() {
+        return RotationUtils.getRotation(getContext());
     }
 
     @Override
@@ -156,6 +186,7 @@ public class QuickQSPanelController extends QSPanelControllerBase<QuickQSPanel> 
                     QQS_BRIGHTNESS_SLIDER, 0) ==  1);
         mFooterActionsController.refreshVisibility(mTunerService.getValue(
                     QQS_FOOTER_ACTIONS, 0) == 1);
+        updateMediaExpansion();
     }
 
     @Override
