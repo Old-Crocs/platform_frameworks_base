@@ -1627,6 +1627,11 @@ public final class RenderNode {
         nEndAllAnimators(mNativeRenderNode);
     }
 
+    /** @hide */
+    public void forceEndAnimators() {
+        nForceEndAnimators(mNativeRenderNode);
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // Regular JNI methods
     ///////////////////////////////////////////////////////////////////////////
@@ -1648,6 +1653,8 @@ public final class RenderNode {
     private static native void nAddAnimator(long renderNode, long animatorPtr);
 
     private static native void nEndAllAnimators(long renderNode);
+
+    private static native void nForceEndAnimators(long renderNode);
 
     ///////////////////////////////////////////////////////////////////////////
     // @CriticalNative methods
