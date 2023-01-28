@@ -28,11 +28,13 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,10 +49,11 @@ import android.os.Bundle;
 import android.os.UserHandle;
 import android.service.notification.NotificationListenerFilter;
 import android.service.notification.NotificationListenerService;
+import android.service.notification.NotificationStats;
+import android.service.notification.StatusBarNotification;
 import android.testing.TestableContext;
 import android.util.ArraySet;
 import android.util.Pair;
-import android.util.Slog;
 import android.util.TypedXmlPullParser;
 import android.util.TypedXmlSerializer;
 import android.util.Xml;
@@ -61,6 +64,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.internal.util.reflection.FieldSetter;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -373,5 +377,116 @@ public class NotificationListenersTest extends UiServiceTestCase {
 
         verify(mContext).sendBroadcastAsUser(
                 any(), eq(UserHandle.of(userId)), nullable(String.class));
+    }
+
+    @Test
+    public void testNotifyPostedLockedInLockdownMode() {
+        NotificationRecord r0 = mock(NotificationRecord.class);
+        NotificationRecord old0 = mock(NotificationRecord.class);
+        UserHandle uh0 = mock(UserHandle.class);
+
+        NotificationRecord r1 = mock(NotificationRecord.class);
+        NotificationRecord old1 = mock(NotificationRecord.class);
+        UserHandle uh1 = mock(UserHandle.class);
+
+        // Neither user0 and user1 is in the lockdown mode
+        when(r0.getUser()).thenReturn(uh0);
+        when(uh0.getIdentifier()).thenReturn(0);
+        when(mNm.isInLockDownMode(0)).thenReturn(false);
+
+        when(r1.getUser()).thenReturn(uh1);
+        when(uh1.getIdentifier()).thenReturn(1);
+        when(mNm.isInLockDownMode(1)).thenReturn(false);
+
+        mListeners.notifyPostedLocked(r0, old0, true);
+        mListeners.notifyPostedLocked(r0, old0, false);
+        verify(r0, atLeast(2)).getSbn();
+
+        mListeners.notifyPostedLocked(r1, old1, true);
+        mListeners.notifyPostedLocked(r1, old1, false);
+        verify(r1, atLeast(2)).getSbn();
+
+        // Reset
+        reset(r0);
+        reset(old0);
+        reset(r1);
+        reset(old1);
+
+        // Only user 0 is in the lockdown mode
+        when(r0.getUser()).thenReturn(uh0);
+        when(uh0.getIdentifier()).thenReturn(0);
+        when(mNm.isInLockDownMode(0)).thenReturn(true);
+
+        when(r1.getUser()).thenReturn(uh1);
+        when(uh1.getIdentifier()).thenReturn(1);
+        when(mNm.isInLockDownMode(1)).thenReturn(false);
+
+        mListeners.notifyPostedLocked(r0, old0, true);
+        mListeners.notifyPostedLocked(r0, old0, false);
+        verify(r0, never()).getSbn();
+
+        mListeners.notifyPostedLocked(r1, old1, true);
+        mListeners.notifyPostedLocked(r1, old1, false);
+        verify(r1, atLeast(2)).getSbn();
+    }
+
+    @Test
+    public void testNotifyRemovedLockedInLockdownMode() throws NoSuchFieldException {
+        NotificationRecord r0 = mock(NotificationRecord.class);
+        NotificationStats rs0 = mock(NotificationStats.class);
+        UserHandle uh0 = mock(UserHandle.class);
+
+        NotificationRecord r1 = mock(NotificationRecord.class);
+        NotificationStats rs1 = mock(NotificationStats.class);
+        UserHandle uh1 = mock(UserHandle.class);
+
+        StatusBarNotification sbn = mock(StatusBarNotification.class);
+        FieldSetter.setField(mNm,
+                NotificationManagerService.class.getDeclaredField("mHandler"),
+                mock(NotificationManagerService.WorkerHandler.class));
+
+        // Neither user0 and user1 is in the lockdown mode
+        when(r0.getUser()).thenReturn(uh0);
+        when(uh0.getIdentifier()).thenReturn(0);
+        when(mNm.isInLockDownMode(0)).thenReturn(false);
+        when(r0.getSbn()).thenReturn(sbn);
+
+        when(r1.getUser()).thenReturn(uh1);
+        when(uh1.getIdentifier()).thenReturn(1);
+        when(mNm.isInLockDownMode(1)).thenReturn(false);
+        when(r1.getSbn()).thenReturn(sbn);
+
+        mListeners.notifyRemovedLocked(r0, 0, rs0);
+        mListeners.notifyRemovedLocked(r0, 0, rs0);
+        verify(r0, atLeast(2)).getSbn();
+
+        mListeners.notifyRemovedLocked(r1, 0, rs1);
+        mListeners.notifyRemovedLocked(r1, 0, rs1);
+        verify(r1, atLeast(2)).getSbn();
+
+        // Reset
+        reset(r0);
+        reset(rs0);
+        reset(r1);
+        reset(rs1);
+
+        // Only user 0 is in the lockdown mode
+        when(r0.getUser()).thenReturn(uh0);
+        when(uh0.getIdentifier()).thenReturn(0);
+        when(mNm.isInLockDownMode(0)).thenReturn(true);
+        when(r0.getSbn()).thenReturn(sbn);
+
+        when(r1.getUser()).thenReturn(uh1);
+        when(uh1.getIdentifier()).thenReturn(1);
+        when(mNm.isInLockDownMode(1)).thenReturn(false);
+        when(r1.getSbn()).thenReturn(sbn);
+
+        mListeners.notifyRemovedLocked(r0, 0, rs0);
+        mListeners.notifyRemovedLocked(r0, 0, rs0);
+        verify(r0, never()).getSbn();
+
+        mListeners.notifyRemovedLocked(r1, 0, rs1);
+        mListeners.notifyRemovedLocked(r1, 0, rs1);
+        verify(r1, atLeast(2)).getSbn();
     }
 }
