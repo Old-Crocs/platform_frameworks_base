@@ -98,7 +98,8 @@ public class PhoneStatusBarView extends FrameLayout implements Callbacks, TunerS
 
     public PhoneStatusBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContentInsetsProvider = Dependency.get(StatusBarContentInsetsProvider.class);
+            mCommandQueue = Dependency.get(CommandQueue.class);
+	    mContentInsetsProvider = Dependency.get(StatusBarContentInsetsProvider.class);
     }
 
     void setTouchEventHandler(TouchEventHandler handler) {
