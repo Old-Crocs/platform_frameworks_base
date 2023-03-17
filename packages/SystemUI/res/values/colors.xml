@@ -221,4 +221,9 @@
     <color name="settingslib_track_off_color">@color/settingslib_track_off</color>
     <color name="connected_network_primary_color">#191C18</color>
     <color name="connected_network_secondary_color">#41493D</color>
+
+    <!-- Gradient Bg Data Usage -->
+    <color name="afl_ripple">@android:color/system_accent1_300</color>
+    <color name="afl_grad_start">@android:color/system_accent2_100</color>
+    <color name="afl_grad_end">@android:color/system_accent1_100</color>
 </resources>

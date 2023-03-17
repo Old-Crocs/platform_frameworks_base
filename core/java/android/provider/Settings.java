@@ -6172,6 +6172,12 @@ public final class Settings {
         public static final String NEW_RETICKER_ANIMATION = "new_reticker_animation";
 
         /**
+         * QS data usage on panel
+         * @hide
+         */
+        public static final String QS_DATA_USAGE_PANEL = "qs_data_usage_panel";
+
+        /**
          * Keys we no longer back up under the current schema, but want to continue to
          * process when restoring historical backup datasets.
          *

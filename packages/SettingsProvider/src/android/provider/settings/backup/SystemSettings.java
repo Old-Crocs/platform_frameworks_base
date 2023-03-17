@@ -87,5 +87,6 @@ public class SystemSettings {
         Settings.System.FULLSCREEN_GESTURES,
         Settings.System.VOLUME_PANEL_ON_LEFT,
         Settings.System.LOCKSCREEN_SMALL_CLOCK,
+        Settings.System.QS_DATA_USAGE_PANEL,
     };
 }
