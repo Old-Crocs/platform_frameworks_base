@@ -3043,10 +3043,11 @@ public class NotificationPanelViewController extends PanelViewController {
                 && !mKeyguardBypassController.getBypassEnabled()) {
             alpha *= mClockPositionResult.clockAlpha;
         }
-        mNotificationStackScrollLayoutController.setAlpha(alpha);
-
         if (mBarState != StatusBarState.KEYGUARD && !isFullyCollapsed()) {
             mStatusBar.updateDismissAllVisibility(true);
+        }
+
+        mNotificationStackScrollLayoutController.setAlpha(alpha);
     }
 
     private float getFadeoutAlpha() {
