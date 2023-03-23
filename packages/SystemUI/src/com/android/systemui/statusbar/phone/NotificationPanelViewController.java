@@ -3043,7 +3043,7 @@ public class NotificationPanelViewController extends PanelViewController {
                 && !mKeyguardBypassController.getBypassEnabled()) {
             alpha *= mClockPositionResult.clockAlpha;
         }
-        if (mBarState != StatusBarState.KEYGUARD && !isFullyCollapsed()) {
+        if (mBarState != StatusBarState.KEYGUARD && !isFullyCollapsed() || !isPanelVisibleBecauseOfHeadsUp()) {
             mStatusBar.updateDismissAllVisibility(true);
         }
 
