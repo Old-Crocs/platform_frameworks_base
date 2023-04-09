@@ -129,7 +129,8 @@ public class FeatureFlags {
     /** Whether or not to use the provider model behavior for the status bar icons */
     public boolean isCombinedStatusBarSignalIconsEnabled() {
         return Settings.Secure.getIntForUser(mContext.getContentResolver(),
-                Settings.Secure.SHOW_COMBINED_STATUS_BAR_SIGNAL_ICONS, 0,
+                Settings.Secure.SHOW_COMBINED_STATUS_BAR_SIGNAL_ICONS,
+                isEnabled(Flags.COMBINED_STATUS_BAR_SIGNAL_ICONS) ? 1 : 1,
                 UserHandle.USER_CURRENT) == 1;
     }
 
