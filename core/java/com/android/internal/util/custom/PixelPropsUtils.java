@@ -110,6 +110,7 @@ public class PixelPropsUtils {
 
     private static final String[] packagesToChangeOP8P = {
             "com.tencent.ig",
+            "com.mobile.legends",
             "com.pubg.imobile",
             "com.pubg.krmobile",
             "com.vng.pubgmobile",
@@ -129,7 +130,6 @@ public class PixelPropsUtils {
     private static final String[] packagesToChangeMI11 = {
             "com.ea.gp.apexlegendsmobilefps",
             "com.levelinfinite.hotta.gp",
-            "com.mobile.legends",
             "com.tencent.tmgp.sgame"
     };
 
