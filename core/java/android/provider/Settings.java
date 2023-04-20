@@ -17480,6 +17480,13 @@ public final class Settings {
     }
 
     /**
+         * Android P animation style
+         * @hide
+         */
+        @Readable
+        public static final String PIE_ANIMATION_STYLE = "pie_animation_style";
+
+    /**
      * Configuration system settings, containing settings which are applied identically for all
      * defined users. Only Android can read these and only a specific configuration service can
      * write these.
