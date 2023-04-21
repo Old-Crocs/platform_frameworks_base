@@ -20,6 +20,8 @@ import static com.android.systemui.statusbar.notification.TransformState.TRANSFO
 
 import android.app.Notification;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.util.ArraySet;
 import android.util.Pair;
 import android.view.NotificationHeaderView;
@@ -68,9 +70,11 @@ public class NotificationHeaderViewWrapper extends NotificationViewWrapper {
 
     private boolean mIsLowPriority;
     private boolean mTransformLowPriorityTitle;
+    private Context mContext;
 
     protected NotificationHeaderViewWrapper(Context ctx, View view, ExpandableNotificationRow row) {
         super(ctx, view, row);
+        mContext = ctx;
         mTransformationHelper = new ViewTransformationHelper();
 
         // we want to avoid that the header clashes with the other text when transforming
@@ -153,6 +157,16 @@ public class NotificationHeaderViewWrapper extends NotificationViewWrapper {
         addRemainingTransformTypes();
         updateCropToPaddingForImageViews();
         Notification notification = row.getEntry().getSbn().getNotification();
+        String pkgname = row.getEntry().getSbn().getPackageName();
+        Drawable appIcon = pkgname != null ?
+                    getApplicationIcon(pkgname) : null;
+        if (appIcon != null && mWorkProfileImage != null) {
+            mIcon.setImageDrawable(appIcon);
+            mWorkProfileImage.setImageIcon(notification.getSmallIcon());
+            // The work profile image is always the same lets just set the icon tag for it not to
+            // animate
+            mWorkProfileImage.setTag(ImageTransformState.ICON_TAG, notification.getSmallIcon());
+        }
         mIcon.setTag(ImageTransformState.ICON_TAG, notification.getSmallIcon());
 
         // We need to reset all views that are no longer transforming in case a view was previously
@@ -164,6 +178,17 @@ public class NotificationHeaderViewWrapper extends NotificationViewWrapper {
                 mTransformationHelper.resetTransformedView(view);
             }
         }
+    }
+
+    private Drawable getApplicationIcon(String packageName) {
+        PackageManager pm = mContext.getPackageManager();
+        Drawable icon = null;
+        try {
+            icon = pm.getApplicationIcon(packageName);
+        } catch (Exception e) {
+            // nothing to do
+        }
+        return icon;
     }
 
     /**
