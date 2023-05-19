@@ -6211,6 +6211,11 @@ public final class Settings {
         public static final String QS_HEADER_IMAGE = "qs_header_image";
 
         /**
+         * @hide
+         */
+        public static final String MAX_VISIBLE_NOTIFICATION_ICONS = "max_visible_notification_icons";
+
+        /**
          * Keys we no longer back up under the current schema, but want to continue to
          * process when restoring historical backup datasets.
          *
@@ -6350,6 +6355,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(BACK_GESTURE_HAPTIC);
             PRIVATE_SETTINGS.add(FORCE_FULLSCREEN_CUTOUT_APPS);
             PRIVATE_SETTINGS.add(SCREEN_OFF_ANIMATION);
+            PRIVATE_SETTINGS.add(MAX_VISIBLE_NOTIFICATION_ICONS);
         }
 
         /**

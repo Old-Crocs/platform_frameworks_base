@@ -88,5 +88,6 @@ public class SystemSettings {
         Settings.System.VOLUME_PANEL_ON_LEFT,
         Settings.System.LOCKSCREEN_SMALL_CLOCK,
         Settings.System.QS_DATA_USAGE_PANEL,
+        Settings.System.MAX_VISIBLE_NOTIFICATION_ICONS,
     };
 }
