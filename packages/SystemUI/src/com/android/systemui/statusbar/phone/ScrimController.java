@@ -302,13 +302,6 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
             mScrimBehindChangeRunnable = null;
         }
 
-        if (mScrimBehind != null) {
-            mCustomScrimAlpha = (Settings.System.getFloatForUser(
-                mScrimBehind.getContext().getContentResolver(),
-                Settings.System.QS_TRANSPARENCY, 100,
-                UserHandle.USER_CURRENT) / 100);
-        }
-
         final ScrimState[] states = ScrimState.values();
         for (int i = 0; i < states.length; i++) {
             states[i].init(mScrimInFront, mScrimBehind, mDozeParameters, mDockManager);
@@ -663,6 +656,14 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
         }
     }
 
+    public void setCustomScrimAlpha(int value) {
+        mCustomScrimAlpha = (float) value / 100f;
+        for (ScrimState state : ScrimState.values()) {
+            state.setCustomScrimAlpha(mCustomScrimAlpha);
+        }
+        applyState();
+    }
+
     private void applyState() {
         mInFrontTint = mState.getFrontTint();
         mBehindTint = mState.getBehindTint();
@@ -901,7 +902,7 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
         boolean occludedKeyguard = (mState == ScrimState.PULSING || mState == ScrimState.AOD)
                 && mKeyguardOccluded;
         if (aodWallpaperTimeout || occludedKeyguard) {
-            mBehindAlpha = 1;
+            mBehindAlpha = mCustomScrimAlpha;
         }
         setScrimAlpha(mScrimInFront, mInFrontAlpha);
         setScrimAlpha(mScrimBehind, mBehindAlpha);
