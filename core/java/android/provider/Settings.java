@@ -6216,6 +6216,12 @@ public final class Settings {
         public static final String MAX_VISIBLE_NOTIFICATION_ICONS = "max_visible_notification_icons";
 
         /**
+         * Whether to settings custom transitions PageTileLayout
+         * @hide
+         */
+        public static final String CUSTOM_TRANSITIONS_KEY = "custom_transitions_page_tile";
+
+        /**
          * Keys we no longer back up under the current schema, but want to continue to
          * process when restoring historical backup datasets.
          *
