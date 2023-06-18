@@ -3514,8 +3514,7 @@ public class AccountManagerService
             Bundle.setDefusable(result, true);
             mNumResults++;
             Intent intent = null;
-            if (result != null
-                    && (intent = result.getParcelable(AccountManager.KEY_INTENT)) != null) {
+            if (result != null) {
                 if (!checkKeyIntent(
                         Binder.getCallingUid(),
                         result)) {
@@ -4874,8 +4873,10 @@ public class AccountManagerService
             	EventLog.writeEvent(0x534e4554, "250588548", authUid, "");
                 return false;
             }
-
             Intent intent = bundle.getParcelable(AccountManager.KEY_INTENT);
+            if (intent == null) {
+                return true;
+            }
             // Explicitly set an empty ClipData to ensure that we don't offer to
             // promote any Uris contained inside for granting purposes
             if (intent.getClipData() == null) {
@@ -4927,19 +4928,7 @@ public class AccountManagerService
             if (intent == null) {
                 return (simulateIntent == null);
             }
-            if (!intent.filterEquals(simulateIntent)) {
-                return false;
-            }
-
-            if (intent.getSelector() != simulateIntent.getSelector()) {
-                return false;
-            }
-
-            int prohibitedFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                    | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
-                    | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION;
-            return (simulateIntent.getFlags() & prohibitedFlags) == 0;
+            return intent.filterEquals(simulateIntent);
         }
 
         private boolean isExportedSystemActivity(ActivityInfo activityInfo) {
@@ -5084,8 +5073,7 @@ public class AccountManagerService
                     }
                 }
             }
-            if (result != null
-                    && (intent = result.getParcelable(AccountManager.KEY_INTENT)) != null) {
+            if (result != null) {
                 if (!checkKeyIntent(
                         Binder.getCallingUid(),
                         result)) {
